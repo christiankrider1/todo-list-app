@@ -1,3 +1,6 @@
+// =========================
+// DOM ELEMENTS
+// =========================
 const taskInput = document.getElementById("taskInput");
 const taskContainer = document.getElementById("taskContainer");
 const addTaskButton = document.getElementById("addTaskButton");
@@ -5,13 +8,41 @@ const addTaskButton = document.getElementById("addTaskButton");
 const pushupsCount = document.getElementById("pushupsCount");
 const pushupsButton = document.getElementById("pushupsButton");
 const resetPushupsButton = document.getElementById("resetPushupsButton");
-let today = new Date().toLocaleDateString();
+
 const dateParagraph = document.getElementById("date");
-dateParagraph.textContent = `${today}`;
-dateParagraph.style.color = "white";
 
 const bibleVerseParagraph = document.getElementById("bibleVerse");
 const verseParagraph = document.getElementById("verse");
+
+// =========================
+// APP STATE
+// =========================
+let draggedTask = null;
+
+let today = new Date().toLocaleDateString();
+let saveDate = localStorage.getItem("pushupsDate");
+
+let count = parseInt(localStorage.getItem("pushupsCount")) || 0;
+
+// =========================
+// DAILY PUSHUP RESET
+// =========================
+if (saveDate !== today) {
+  count = 0;
+
+  localStorage.setItem("pushupsCount", count);
+  localStorage.setItem("pushupsDate", today);
+}
+
+// =========================
+// DISPLAY CURRENT DATE
+// =========================
+dateParagraph.textContent = today;
+dateParagraph.style.color = "white";
+
+// =========================
+// BIBLE VERSES
+// =========================
 const verses = {
   "Philippians 4:8": "Finally, brothers and sisters, whatever is true, whatever is noble, whatever is right, whatever is pure, whatever is lovely, whatever is admirable—if anything is excellent or praiseworthy—think about such things",
   "Colossians 3:15": "Let the peace of Christ rule in your hearts, since as members of one body you were called to peace. And be thankful.",
@@ -35,44 +66,59 @@ const verses = {
   "Psalm 55:22":"Cast your cares on the Lord and he will sustain you; he will never let the righteous be shaken.",
 "Romans 8:38-39":"For I am convinced that neither death nor life, neither angels nor demons, neither the present nor the future, nor any powers, neither height nor depth, nor anything else in all creation, will be able to separate us from the love of God that is in Christ Jesus our Lord.",
 "Romans 12:2":"Do not conform to the pattern of this world, but be transformed by the renewing of your mind. Then you will be able to test and approve what Gods will is—his good, pleasing and perfect will."
+
 };
 
 const verseKeys = Object.keys(verses);
 
+// =========================
+// RANDOM VERSE DISPLAY
+// =========================
 function displayRandomVerse() {
-  const randomKey = verseKeys[Math.floor(Math.random() * verseKeys.length)];
-  bibleVerseParagraph.textContent = `${randomKey}`;
-  verseParagraph.textContent = `${verses[randomKey]}`;
+  const randomKey =
+    verseKeys[Math.floor(Math.random() * verseKeys.length)];
+
+  bibleVerseParagraph.textContent = randomKey;
+  verseParagraph.textContent = verses[randomKey];
+
   bibleVerseParagraph.style.color = "white";
   verseParagraph.style.color = "white";
 }
 
-let count = parseInt(localStorage.getItem("pushupsCount")) || 0;
+// =========================
+// PUSHUP COUNTER
+// =========================
 
-//Show initial count
+// Show initial count
 pushupsCount.textContent = count;
-//Add 25 pushups when button is pressed
+
+// Add pushups
 pushupsButton.addEventListener("click", () => {
+
   count += 25;
+
   pushupsCount.textContent = count;
-  if(count == 100) {
+
+  if (count == 100) {
     alert("Daily goal has been reached! - 💪GET JACKED💪");
-  } else if(count == 125){
-    alert("You little over-achiever! Proud of you😘");
-  } else if(count == 150){
-    alert("Pushupsmaxing! Keep it up!🔥");
   }
+
   localStorage.setItem("pushupsCount", count);
 });
 
+// Reset pushups
 resetPushupsButton.addEventListener("click", () => {
+
   count = 0;
+
   pushupsCount.textContent = count;
+
   localStorage.setItem("pushupsCount", count);
 });
 
-
+// =========================
 // ADD TASK
+// =========================
 addTaskButton.addEventListener("click", () => {
 
   if (taskInput.value.trim() === "") {
@@ -85,47 +131,142 @@ addTaskButton.addEventListener("click", () => {
   taskInput.value = "";
 });
 
-// CREATE TASK FUNCTION
-function createTask(taskText, completed = false ) {
-  const wrapper = document.createElement("div");
-wrapper.classList.add("task");
+// =========================
+// DRAG AND DROP
+// =========================
+function getDragAfterElement(container, y) {
 
-if (completed) {
-  wrapper.classList.add("completed");
+  const draggableElements = [
+    ...container.querySelectorAll(".task:not([style*='opacity: 0.5'])")
+  ];
+
+  return draggableElements.reduce((closest, child) => {
+
+    const box = child.getBoundingClientRect();
+
+    const offset = y - box.top - box.height / 2;
+
+    if (offset < 0 && offset > closest.offset) {
+      return {
+        offset: offset,
+        element: child
+      };
+    }
+
+    return closest;
+
+  }, {
+    offset: Number.NEGATIVE_INFINITY
+  }).element;
 }
-const checkbox = document.createElement("input");
-checkbox.type = "checkbox";
-checkbox.classList.add("checkbox");
-checkbox.checked = completed;
 
+taskContainer.addEventListener("dragover", (e) => {
+
+  e.preventDefault();
+
+  const afterElement =
+    getDragAfterElement(taskContainer, e.clientY);
+
+  if (afterElement == null) {
+    taskContainer.appendChild(draggedTask);
+  } else {
+    taskContainer.insertBefore(draggedTask, afterElement);
+  }
+
+  saveTasks();
+});
+
+// =========================
+// CREATE TASK
+// =========================
+function createTask(taskText, important = false) {
+
+  const wrapper = document.createElement("div");
+
+  wrapper.classList.add("task");
+
+  wrapper.draggable = true;
+
+  if (important) {
+    wrapper.classList.add("important");
+  }
+
+  // Drag start
+  wrapper.addEventListener("dragstart", () => {
+
+    draggedTask = wrapper;
+
+    wrapper.style.opacity = "0.5";
+  });
+
+  // Drag end
+  wrapper.addEventListener("dragend", () => {
+
+    draggedTask = null;
+
+    wrapper.style.opacity = "1";
+  });
+
+  // Important button
+  const importantBtn = document.createElement("button");
+
+  importantBtn.textContent = "⭐";
+
+  importantBtn.classList.add("important-btn");
+
+  importantBtn.addEventListener("click", () => {
+
+    wrapper.classList.toggle("important");
+
+    saveTasks();
+  });
+
+  // Task text
   const paragraph = document.createElement("p");
+
   paragraph.textContent = taskText;
+
   paragraph.classList.add("task-text");
 
-  const removeButton = document.createElement("button");
-  removeButton.textContent = "Remove";
-  removeButton.classList.add("remove-btn");
-
+  // Edit button
   const editButton = document.createElement("button");
+
   editButton.textContent = "Edit";
+
   editButton.classList.add("edit-btn");
 
-  wrapper.appendChild(checkbox);
+  // Remove button
+  const removeButton = document.createElement("button");
+
+  removeButton.textContent = "Remove";
+
+  removeButton.classList.add("remove-btn");
+
+  // Add elements to wrapper
+  wrapper.appendChild(importantBtn);
   wrapper.appendChild(paragraph);
   wrapper.appendChild(editButton);
   wrapper.appendChild(removeButton);
 
+  // Add task to page
   taskContainer.appendChild(wrapper);
+
+  // Animation
+  setTimeout(() => {
+    wrapper.classList.add("show");
+  }, 10);
 
   saveTasks();
 }
 
-// CLICK EVENTS
+// =========================
+// TASK BUTTON EVENTS
+// =========================
 taskContainer.addEventListener("click", (e) => {
 
   const target = e.target;
 
-  // REMOVE TASK
+  // Remove task
   if (target.classList.contains("remove-btn")) {
 
     target.parentElement.remove();
@@ -133,7 +274,7 @@ taskContainer.addEventListener("click", (e) => {
     saveTasks();
   }
 
-  // EDIT TASK
+  // Edit task
   if (target.classList.contains("edit-btn")) {
 
     const paragraph =
@@ -151,30 +292,9 @@ taskContainer.addEventListener("click", (e) => {
   }
 });
 
-// CHECKBOX TOGGLE
-taskContainer.addEventListener("change", (e) => {
-
-  const target = e.target;
-
-  if (target.classList.contains("checkbox")) {
-
-    const taskDiv =
-      target.parentElement;
-
-    if (target.checked) {
-
-      taskDiv.classList.add("completed");
-
-    } else {
-
-      taskDiv.classList.remove("completed");
-    }
-
-    saveTasks();
-  }
-});
-
+// =========================
 // SAVE TASKS
+// =========================
 function saveTasks() {
 
   const tasks = [];
@@ -184,12 +304,12 @@ function saveTasks() {
     const text =
       task.querySelector(".task-text").textContent;
 
-    const completed =
-      task.querySelector(".checkbox").checked;
+    const important =
+      task.classList.contains("important");
 
     tasks.push({
       text,
-      completed
+      important
     });
   });
 
@@ -199,16 +319,26 @@ function saveTasks() {
   );
 }
 
+// =========================
 // LOAD TASKS
+// =========================
 function loadTasks() {
 
   const savedTasks =
     JSON.parse(localStorage.getItem("tasks")) || [];
 
   savedTasks.forEach(task => {
-    createTask(task.text, task.completed);
+
+    createTask(
+      task.text,
+      task.important
+    );
   });
 }
 
+// =========================
+// INITIALIZE APP
+// =========================
 loadTasks();
+
 displayRandomVerse();

@@ -18,13 +18,6 @@ body {
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-.completed{
-  border-radius: 6px;
-  background-color: rgba(255, 215, 0, 0.25);
-  padding: 2px 4px;
-  color: black;
-}
-
 .input-section {
   display: flex;
   gap: 10px;
@@ -65,14 +58,47 @@ body {
   cursor: pointer;
 }
 
+.important-btn {
+  background-color: black;
+  color: red;
+  font-size: 18px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
 .task {
   display: flex;
   align-items: center;
   gap: 10px;
-
   margin-bottom: 10px;
-
   word-break: break-word;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.25s ease;
+}
+
+.important{
+  background-color: gold;
+  color: black;
+  font-weight: bold;
+  border-radius: 6px;
+}
+
+.important .important-btn {
+  background-color: gold;
+  color: black;
+  border-radius: 50%;
+  transition: all 0.25s ease;
+}
+
+.task.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.completed .task-text {
+  transition: all 0.2s ease;
 }
 
 h1, #pushupsDiv, #taskContainer{

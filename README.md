@@ -4,11 +4,12 @@ A productivity-focused todo application built with vanilla JavaScript, HTML, and
 
 This project combines:
 
-* ✅ Persistent task management
-* 💪 Daily pushup tracking
-* 📖 Daily Bible verses
-* 💾 LocalStorage persistence
-* 🎨 Interactive UI states
+* ✅ Persistent task management  
+* ⭐ Important task highlighting  
+* 💪 Daily pushup tracking  
+* 📖 Daily Bible verses  
+* 💾 LocalStorage persistence  
+* 🎨 Interactive UI states + drag-and-drop sorting  
 
 ---
 
@@ -16,34 +17,45 @@ This project combines:
 
 ## ✅ Todo List
 
-* Add tasks
-* Edit tasks
-* Remove tasks
-* Mark tasks as completed
-* Completed task highlighting persists after refresh
-* Tasks are saved using `localStorage`
+* Add tasks  
+* Edit tasks  
+* Remove tasks  
+* Mark tasks as important (⭐ star toggle)  
+* Drag and drop tasks to reorder  
+* Task highlighting persists after refresh  
+* Tasks are saved using `localStorage`  
+
+## ⭐ Important Tasks System
+
+* Click the ⭐ button to mark a task as important  
+* Important tasks are visually highlighted  
+* Styling persists after page reload  
+* Helps prioritize tasks without needing a checkbox  
 
 ## 💪 Pushup Counter
 
-* Tracks daily pushup progress
-* Adds 25 pushups per button click
-* Goal milestone alerts
-* Reset button included
-* Pushup count persists with `localStorage`
+* Tracks daily pushup progress  
+* Adds 25 pushups per button click  
+* Goal milestone alerts  
+* Reset button included  
+* Automatically resets each new day  
+* Pushup count persists with `localStorage`  
 
 ## 📖 Daily Bible Verse
 
-* Displays a random Bible verse each time the app loads
-* Includes verse references and scripture text
-* Encouraging and motivational verses included
+* Displays a random Bible verse each time the app loads  
+* Includes verse references and scripture text  
+* Encouraging and motivational verses included  
 
 ## 💾 Persistent Storage
 
 The app uses browser `localStorage` to save:
 
-* Tasks
-* Completion states
-* Pushup counts
+* Tasks  
+* Task importance state  
+* Task completion state  
+* Pushup counts  
+* Last active date (for daily reset system)  
 
 Your data remains after refreshing or reopening the page.
 
@@ -51,10 +63,10 @@ Your data remains after refreshing or reopening the page.
 
 # Technologies Used
 
-* HTML5
-* CSS3
-* JavaScript (Vanilla JS)
-* Browser LocalStorage API
+* HTML5  
+* CSS3  
+* JavaScript (Vanilla JS)  
+* Browser LocalStorage API  
 
 ---
 
@@ -67,15 +79,17 @@ Tasks are stored as objects:
 ```js
 {
   text: "Finish project",
-  completed: true
+  completed: true,
+  important: false
 }
 ```
 
 When the page reloads:
 
-* Tasks are loaded from `localStorage`
-* Completion state is restored
-* Highlight styling is reapplied automatically
+* Tasks are loaded from `localStorage`  
+* Completion state is restored  
+* Important state is restored  
+* Styling is reapplied automatically  
 
 ---
 
@@ -83,13 +97,12 @@ When the page reloads:
 
 Planned upgrades:
 
-* Drag-and-drop task sorting
-* Dark/light mode toggle
-* Daily reset system
-* Real Bible Verse API integration
-* Mobile responsiveness improvements
-* Due dates and reminders
-* Task categories
+* Dark/light mode toggle  
+* Mobile responsiveness improvements  
+* Due dates and reminders  
+* Task categories / tags  
+* Sound effects or haptics  
+* Undo delete functionality  
 
 ---
 
