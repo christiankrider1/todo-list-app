@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>To-Do List App</title>
-
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+  <div id="toast" class="toast"></div>
+
   <div class="app">
     <p id="bibleVerse"></p>
     <p id="verse"></p>
@@ -20,18 +20,17 @@
       <span id="pushupsCount">0</span>/100 daily pushups
       <button id="pushupsButton">+ 25 Pushups</button>
       <button id="resetPushupsButton">Reset</button>
+      <p id="streakDisplay">🔥 Streak: 0 days</p>
     </div>
 
     <div class="input-section">
-      <input
-        type="text"
-        id="taskInput"
-        placeholder="Enter a task"
-      >
+      <input type="text" id="taskInput" placeholder="Enter a task">
+      <button id="addTaskButton">Add Task</button>
+    </div>
 
-      <button id="addTaskButton">
-        Add Task
-      </button>
+    <div class="filter-section">
+      <input type="text" id="searchInput" placeholder="Search tasks...">
+      <span id="taskStats"></span>
     </div>
 
     <div id="taskContainer"></div>

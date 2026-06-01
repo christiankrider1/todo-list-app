@@ -1,11 +1,12 @@
 body {
   font-family: Arial, sans-serif;
   background-color: rgba(0, 0, 0, 0.93);
-
   display: flex;
   justify-content: center;
-
-  margin-top: 50px;
+  margin: 0;
+  padding: 50px 10px 20px;
+  min-height: 100vh;
+  box-sizing: border-box;
 }
 
 .app {
@@ -21,11 +22,11 @@ body {
 .input-section {
   display: flex;
   gap: 10px;
-
   margin-bottom: 20px;
 }
 
 .task-text {
+  flex: 1;
   transition: all 0.2s ease;
 }
 
@@ -38,10 +39,8 @@ body {
 #addTaskButton, #pushupsButton {
   background-color: green;
   color: white;
-
   border: none;
   border-radius: 5px;
-
   padding: 10px;
   cursor: pointer;
   margin-bottom: 20px;
@@ -50,10 +49,8 @@ body {
 #resetPushupsButton{
   background-color: red;
   color: white;
-
   border: none;
   border-radius: 5px;
-
   padding: 10px;
   cursor: pointer;
 }
@@ -101,21 +98,19 @@ body {
   transition: all 0.2s ease;
 }
 
-h1, #pushupsDiv, #taskContainer{
+h1 {
   color: rgb(255, 255, 255);
 }
 
-.task-text {
-  flex: 1;
+#pushupsDiv, #taskContainer{
+  color: rgb(255, 255, 255);
 }
 
 .remove-btn {
   background-color: red;
   color: white;
-
   border: none;
   border-radius: 5px;
-
   padding: 5px 10px;
   cursor: pointer;
 }
@@ -123,10 +118,8 @@ h1, #pushupsDiv, #taskContainer{
 .edit-btn {
   background-color: orange;
   color: white;
-
   border: none;
   border-radius: 5px;
-
   padding: 5px 10px;
   cursor: pointer;
 }
@@ -137,4 +130,137 @@ button:hover {
 
 #bibleVerse, #verse {
   font-style: oblique;
+}
+
+/* =========================
+   TOAST NOTIFICATION
+   ========================= */
+.toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1000;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.toast.show {
+  opacity: 1;
+}
+
+/* =========================
+   STREAK DISPLAY
+   ========================= */
+#streakDisplay {
+  margin: 10px 0 0;
+  font-size: 14px;
+  color: #ff9800;
+}
+
+/* =========================
+   FILTER SECTION
+   ========================= */
+.filter-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+#searchInput {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #555;
+  background: #222;
+  color: #fff;
+  font-size: 14px;
+}
+
+#searchInput::placeholder {
+  color: #888;
+}
+
+#taskStats {
+  font-size: 13px;
+  color: #aaa;
+  white-space: nowrap;
+}
+
+/* =========================
+   TASK CHECKBOX
+   ========================= */
+.task-checkbox {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  accent-color: #4caf50;
+  flex-shrink: 0;
+}
+
+.completed-text {
+  text-decoration: line-through;
+  opacity: 0.5;
+}
+
+/* =========================
+   MOBILE / RESPONSIVE
+   ========================= */
+@media (max-width: 480px) {
+  body {
+    padding: 20px 10px;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 100%;
+    padding: 15px;
+    box-sizing: border-box;
+  }
+
+  .input-section {
+    flex-direction: column;
+  }
+
+  #addTaskButton, #pushupsButton, #resetPushupsButton {
+    padding: 12px;
+    font-size: 15px;
+    margin-bottom: 10px;
+  }
+
+  .filter-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #taskStats {
+    text-align: right;
+  }
+
+  .task {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .task button {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+
+  .task-checkbox {
+    width: 22px;
+    height: 22px;
+  }
+
+  #bibleVerse, #verse {
+    font-size: 14px;
+  }
 }
