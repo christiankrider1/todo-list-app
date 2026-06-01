@@ -1,152 +1,141 @@
 # Faith & Fitness Todo App
 
-A productivity-focused todo application built with vanilla JavaScript, HTML, and CSS.
-
-This project combines:
-
-* ✅ Persistent task management  
-* ⭐ Important task highlighting  
-* 💪 Daily pushup tracking  
-* 📖 Daily Bible verses  
-* 💾 LocalStorage persistence  
-* 🎨 Interactive UI states + drag-and-drop sorting  
+A full-featured productivity app that combines task management with daily fitness tracking and inspiration — built with vanilla JavaScript, HTML, and CSS. No frameworks, no build tools, no dependencies.
 
 ---
 
-# Features
+## Features
 
-## ✅ Todo List
+### ✅ Todo List
+- Add, edit, and remove tasks
+- Mark tasks as important (⭐ star toggle) with gold highlight
+- Check off completed tasks (checkbox + strikethrough)
+- Drag and drop to reorder
+- Live **search/filter** — type to filter tasks in real time
+- **Progress stats** — shows `X/Y completed (Z%)` at a glance
 
-* Add tasks  
-* Edit tasks  
-* Remove tasks  
-* Mark tasks as important (⭐ star toggle)  
-* Drag and drop tasks to reorder  
-* Task highlighting persists after refresh  
-* Tasks are saved using `localStorage`  
+### 💪 Pushup Tracker
+- Daily pushup counter (resets automatically each day)
+- **+25** button to increment; **Reset** button to start over
+- **Milestones** at 25, 50, 75, and 100 pushups — each fires once per day with a unique motivational message
+- **Streak tracking** — consecutive days the 100-pushup goal was met, displayed as `🔥 Streak: N days`
 
-## ⭐ Important Tasks System
+### 📖 Daily Bible Verse
+- Fetches a random verse from **[bible-api.com](https://bible-api.com)** (World English Bible, public domain)
+- Same verse shown all day; a new verse is fetched automatically each day
+- Cached in `localStorage` so it loads instantly on repeat visits
+- Graceful fallback if offline
 
-* Click the ⭐ button to mark a task as important  
-* Important tasks are visually highlighted  
-* Styling persists after page reload  
-* Helps prioritize tasks without needing a checkbox  
+### 🔔 Toast Notifications
+- Inline notification bar replaces intrusive `alert()` popups
+- Auto-dismisses after 3 seconds with a smooth fade animation
+- Used for input validation and milestone messages
 
-## 💪 Pushup Counter
+### 📱 Mobile-Friendly
+- Fully responsive layout with `@media (max-width: 480px)` breakpoints
+- Stacks input and filter sections vertically on small screens
+- Larger tap targets and optimized font sizes for touch
 
-* Tracks daily pushup progress  
-* Adds 25 pushups per button click  
-* Goal milestone alerts  
-* Reset button included  
-* Automatically resets each new day  
-* Pushup count persists with `localStorage`  
+### 💾 Persistent Storage
+All data is saved to the browser's `localStorage`:
 
-## 📖 Daily Bible Verse
+- Tasks (text, importance, completion state)
+- Task order (drag-and-drop position)
+- Pushup count + milestone state + streak history
+- Cached Bible verse + date
 
-* Displays a random Bible verse each time the app loads  
-* Includes verse references and scripture text  
-* Encouraging and motivational verses included  
-
-## 💾 Persistent Storage
-
-The app uses browser `localStorage` to save:
-
-* Tasks  
-* Task importance state  
-* Task completion state  
-* Pushup counts  
-* Last active date (for daily reset system)  
-
-Your data remains after refreshing or reopening the page.
+Your data persists across page refreshes and browser sessions.
 
 ---
 
-# Technologies Used
+## Technologies Used
 
-* HTML5  
-* CSS3  
-* JavaScript (Vanilla JS)  
-* Browser LocalStorage API  
+- **HTML5** — semantic markup
+- **CSS3** — flexbox, transitions, media queries
+- **JavaScript (Vanilla ES6+)** — all application logic
+- **Browser LocalStorage API** — client-side persistence
+- **Bible API** — [`bible-api.com`](https://bible-api.com) (free, no key required)
+- **HTML5 Drag & Drop API** — task reordering
 
 ---
 
-# How It Works
+## How It Works
 
-## Task Persistence
+### Task Persistence
 
-Tasks are stored as objects:
+Tasks are stored as objects in `localStorage`:
 
 ```js
 {
   text: "Finish project",
-  completed: true,
-  important: false
+  important: false,
+  completed: true
 }
 ```
 
-When the page reloads:
+On page load, tasks are deserialized and recreated with all state (text, importance, completion) restored.
 
-* Tasks are loaded from `localStorage`  
-* Completion state is restored  
-* Important state is restored  
-* Styling is reapplied automatically  
+### Daily Verse Caching
+
+```js
+// Pseudocode for the caching logic
+if (localStorage has verse saved from today) {
+  show cached verse           // instant, no network
+} else {
+  fetch("https://bible-api.com/?random=verse")
+  cache the response with today's date
+  show the new verse
+}
+```
+
+### Pushup Streak Logic
+
+When the user hits 100 pushups:
+
+1. If yesterday's goal was also completed → streak increments
+2. If there was a gap → streak resets to 1
+3. Streak is displayed and persisted in `localStorage`
 
 ---
 
-# Future Improvements
+## Future Improvements
 
 Planned upgrades:
 
-* Dark/light mode toggle  
-* Mobile responsiveness improvements  
-* Due dates and reminders  
-* Task categories / tags  
-* Sound effects or haptics  
-* Undo delete functionality  
+- Dark/light mode toggle
+- Due dates and reminders
+- Task categories / tags
+- Sound effects or haptics
+- Undo delete functionality
 
 ---
 
-# Installation
-
-## Clone the repository
+## Installation
 
 ```bash
-git clone https://github.com/yourusername/your-repo.git
+git clone https://github.com/christiankrider1/todo-list-app.git
+cd todo-list-app
 ```
 
-## Open the project
-
-```bash
-cd your-repo
-```
-
-Open `index.html` in your browser.
+Open `index.html` in your browser. No build step required.
 
 ---
 
-# GitHub Pages Deployment
+## GitHub Pages Deployment
 
-After pushing updates:
-
-```bash
-git add .
-git commit -m "Updated todo app"
-git push origin main
-```
-
-Your GitHub Pages site should update automatically.
+After pushing updates to `main`, your GitHub Pages site updates automatically.
 
 ---
 
-# License
+## License
 
-This project is open source and available under the MIT License.
+MIT
 
 ---
 
-# Author
+## Author
 
-Built by Christian Krider.
+Built by **Christian Krider**.
 
 ---
 
