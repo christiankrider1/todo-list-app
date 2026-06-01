@@ -212,6 +212,55 @@ button:hover {
 }
 
 /* =========================
+   RECURRING & REMINDER
+   ========================= */
+.recurring-btn, .reminder-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 2px 4px;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+
+.recurring-btn:hover, .reminder-btn:hover {
+  opacity: 1;
+}
+
+.recurring .recurring-btn {
+  opacity: 1;
+}
+
+.has-reminder .reminder-btn {
+  opacity: 1;
+}
+
+.recurring-day {
+  font-size: 10px;
+  color: #4fc3f7;
+  font-weight: bold;
+  margin-right: 2px;
+  min-width: 28px;
+}
+
+.reminder-time {
+  font-size: 10px;
+  color: #ffb74d;
+  font-weight: bold;
+  margin-right: 2px;
+  min-width: 32px;
+}
+
+.important .recurring-day {
+  color: #1565c0;
+}
+
+.important .reminder-time {
+  color: #e65100;
+}
+
+/* =========================
    MOBILE / RESPONSIVE
    ========================= */
 @media (max-width: 480px) {

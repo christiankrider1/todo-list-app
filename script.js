@@ -16,12 +16,23 @@ const verseParagraph = document.getElementById("verse");
 
 const toast = document.getElementById("toast");
 
+const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+let reminderFiredSet = new Set();
+
 let draggedTask = null;
 
 let today = new Date().toLocaleDateString();
 let saveDate = localStorage.getItem("pushupsDate");
 
 let count = parseInt(localStorage.getItem("pushupsCount")) || 0;
+
+function getWeekNumber(date) {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+}
 
 const MILESTONES = [
   { count: 25, message: "Great start! Keep pushing! 💪" },
@@ -192,7 +203,7 @@ taskContainer.addEventListener("dragover", (e) => {
   saveTasks();
 });
 
-function createTask(taskText, important = false, completed = false) {
+function createTask(taskText, important = false, completed = false, recurring = false, recurringDay = -1, reminder = null) {
   const wrapper = document.createElement("div");
   wrapper.classList.add("task");
   wrapper.draggable = true;
@@ -233,6 +244,71 @@ function createTask(taskText, important = false, completed = false) {
     saveTasks();
   });
 
+  const recurringBtn = document.createElement("button");
+  recurringBtn.textContent = "🔄";
+  recurringBtn.classList.add("recurring-btn");
+  recurringBtn.title = "Toggle weekly recurring";
+  const recurringDaySpan = document.createElement("span");
+  recurringDaySpan.classList.add("recurring-day");
+  if (recurring && recurringDay >= 0) {
+    wrapper.classList.add("recurring");
+    wrapper.dataset.recurringDay = recurringDay;
+    wrapper.dataset.lastResetWeek = getWeekNumber(new Date());
+    recurringDaySpan.textContent = DAY_NAMES[recurringDay];
+  }
+  recurringBtn.addEventListener("click", () => {
+    if (wrapper.classList.contains("recurring")) {
+      wrapper.classList.remove("recurring");
+      delete wrapper.dataset.recurringDay;
+      delete wrapper.dataset.lastResetWeek;
+      recurringDaySpan.textContent = "";
+    } else {
+      const days = DAY_NAMES.map((d, i) => `${i}: ${d}`).join("\n");
+      const input = prompt(`Repeat every:\n${days}`, new Date().getDay());
+      const day = parseInt(input);
+      if (day >= 0 && day <= 6) {
+        wrapper.classList.add("recurring");
+        wrapper.dataset.recurringDay = day;
+        wrapper.dataset.lastResetWeek = getWeekNumber(new Date());
+        recurringDaySpan.textContent = DAY_NAMES[day];
+        showToast(`Repeats every ${DAY_NAMES[day]}`);
+      }
+    }
+    saveTasks();
+  });
+
+  const reminderBtn = document.createElement("button");
+  reminderBtn.textContent = "🔔";
+  reminderBtn.classList.add("reminder-btn");
+  reminderBtn.title = "Set reminder";
+  const reminderTimeSpan = document.createElement("span");
+  reminderTimeSpan.classList.add("reminder-time");
+  if (reminder) {
+    wrapper.classList.add("has-reminder");
+    wrapper.dataset.reminder = reminder;
+    reminderTimeSpan.textContent = reminder;
+  }
+  reminderBtn.addEventListener("click", () => {
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+    if (wrapper.dataset.reminder) {
+      delete wrapper.dataset.reminder;
+      wrapper.classList.remove("has-reminder");
+      reminderTimeSpan.textContent = "";
+      showToast("Reminder removed");
+    } else {
+      const input = prompt("Reminder time (HH:MM, 24h format):", "09:00");
+      if (input && /^\d{2}:\d{2}$/.test(input)) {
+        wrapper.dataset.reminder = input;
+        wrapper.classList.add("has-reminder");
+        reminderTimeSpan.textContent = input;
+        showToast(`Reminder set for ${input}`);
+      }
+    }
+    saveTasks();
+  });
+
   const paragraph = document.createElement("p");
   paragraph.textContent = taskText;
   paragraph.classList.add("task-text");
@@ -250,6 +326,10 @@ function createTask(taskText, important = false, completed = false) {
 
   wrapper.appendChild(checkbox);
   wrapper.appendChild(importantBtn);
+  wrapper.appendChild(recurringBtn);
+  wrapper.appendChild(recurringDaySpan);
+  wrapper.appendChild(reminderBtn);
+  wrapper.appendChild(reminderTimeSpan);
   wrapper.appendChild(paragraph);
   wrapper.appendChild(editButton);
   wrapper.appendChild(removeButton);
@@ -313,7 +393,12 @@ function saveTasks() {
     const important = task.classList.contains("important");
     const completed = task.classList.contains("completed");
 
-    tasks.push({ text, important, completed });
+    const recurring = task.classList.contains("recurring");
+    const recurringDay = recurring ? parseInt(task.dataset.recurringDay) : -1;
+    const lastResetWeek = recurring ? parseInt(task.dataset.lastResetWeek) : -1;
+    const reminder = task.dataset.reminder || null;
+
+    tasks.push({ text, important, completed, recurring, recurringDay, lastResetWeek, reminder });
   });
 
   localStorage.setItem("tasks", JSON.stringify(tasks));
@@ -323,10 +408,45 @@ function loadTasks() {
   const savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
   savedTasks.forEach((task) => {
-    createTask(task.text, task.important, task.completed);
+    if (task.recurring && task.recurringDay >= 0) {
+      const todayDay = new Date().getDay();
+      const currentWeek = getWeekNumber(new Date());
+      if (task.recurringDay === todayDay && task.lastResetWeek !== currentWeek) {
+        task.completed = false;
+        task.lastResetWeek = currentWeek;
+      }
+    }
+    createTask(task.text, task.important, task.completed, task.recurring, task.recurringDay, task.reminder);
   });
 }
 
 loadTasks();
 displayDailyVerse();
 updateTaskStats();
+
+if ("Notification" in window && Notification.permission === "default") {
+  Notification.requestPermission();
+}
+
+setInterval(() => {
+  const now = new Date();
+  const timeStr =
+    `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+
+  document.querySelectorAll(".task.has-reminder").forEach((task) => {
+    const reminderTime = task.dataset.reminder;
+    if (!reminderTime || task.classList.contains("completed")) return;
+
+    if (reminderTime === timeStr) {
+      const text = task.querySelector(".task-text").textContent;
+      const key = text + reminderTime;
+      if (!reminderFiredSet.has(key)) {
+        reminderFiredSet.add(key);
+        if (Notification.permission === "granted") {
+          new Notification("⏰ Task Reminder", { body: text });
+        }
+        showToast(`⏰ Reminder: ${text}`, 5000);
+      }
+    }
+  });
+}, 30000);
