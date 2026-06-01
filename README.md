@@ -147,3 +147,7 @@ This project is open source and available under the MIT License.
 # Author
 
 Built by Christian Krider.
+
+---
+
+*This app was improved with the assistance of AI (opencode/claude).*
