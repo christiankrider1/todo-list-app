@@ -1,5 +1,7 @@
 # Faith & Fitness Todo App
 
+> AI was used to assist in the development and improvement of this project.
+
 A full-featured productivity app that combines task management with daily fitness tracking and inspiration — built with vanilla JavaScript, HTML, and CSS. No frameworks, no build tools, no dependencies.
 
 ---
@@ -7,7 +9,7 @@ A full-featured productivity app that combines task management with daily fitnes
 ## Features
 
 ### ✅ Todo List
-- Add, edit, and remove tasks
+- Add, edit (inline ✏️), and remove tasks with undo support
 - Mark tasks as important (⭐ star toggle) with gold highlight
 - Check off completed tasks (checkbox + strikethrough)
 - Drag and drop to reorder
@@ -15,6 +17,7 @@ A full-featured productivity app that combines task management with daily fitnes
 - **Reminders** — set a 🔔 with an HH:MM time; fires a browser notification + toast when the time arrives
 - Live **search/filter** — type to filter tasks in real time
 - **Progress stats** — shows `X/Y completed (Z%)` at a glance
+- **Empty state** — friendly message when no tasks exist
 
 ### 💪 Pushup Tracker
 - Daily pushup counter (resets automatically each day)
@@ -30,13 +33,16 @@ A full-featured productivity app that combines task management with daily fitnes
 
 ### 🔔 Toast Notifications
 - Inline notification bar replaces intrusive `alert()` popups
-- Auto-dismisses after 3 seconds with a smooth fade animation
-- Used for input validation and milestone messages
+- Auto-dismisses with a smooth fade animation
+- **Undo** button appears when a task is deleted — restores the task with all its properties
+- Used for input validation, milestone messages, and reminders
 
 ### 📱 Mobile-Friendly
 - Fully responsive layout with `@media (max-width: 480px)` breakpoints
 - Stacks input and filter sections vertically on small screens
-- Larger tap targets and optimized font sizes for touch
+- Larger tap targets, bigger icons, and optimized font sizes for touch
+- **Swipe-to-delete** — swipe left on any task to delete it
+- Task text wraps to its own line on mobile so it never gets squished
 
 ### 💾 Persistent Storage
 All data is saved to the browser's `localStorage`:
@@ -113,7 +119,6 @@ Planned upgrades:
 - Due dates
 - Task categories / tags
 - Sound effects or haptics
-- Undo delete functionality
 
 ---
 
